@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<commands>
+    <command name="PASS">
+        `[A-Za-z0-9]+`
+    </command>
+    <command name="NICK">
+        `[A-Za-z0-9]+`
+    </command>
+    <command name="USER">
+        `[A-Za-z0-9]+ [0-9]+ [0-9\*]+ [A-Za-z0-9]+`
+    </command>
+    <command name="OPER">
+        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+    </command>
+    <command name="MODE">
+        `[A-Za-z0-9]+ ([\+\-])([iwoOr])`
+    </command>
+    <command name="QUIT">
+        `[A-Za-z0-9]*`
+    </command>
+    <!-- JOIN 0 will exit all open channels -->
+    <command name="JOIN">
+        `[&amp;#\+!][A-Za-z0-9]+[ ]*[A-Za-z0-9]*`
+    </command>
+    <command name="PART">
+        `[A-Za-z0-9]+ [A-Za-z0-9]*`
+    </command>
+    <command name="TOPIC">
+        `[A-Za-z0-9]+ [A-Za-z0-9]*`
+    </command>
+    <command name="NAMES">
+        `[A-Za-z0-9]* [A-Za-z0-9]*`
+    </command>
+    <command name="LIST">
+        `[A-Za-z0-9]* [A-Za-z0-9]*`
+    </command>
+    <command name="INVITE">
+        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+    </command>
+    <command name="KICK">
+        `[A-Za-z0-9]+ [A-Za-z0-9]+ [A-Za-z0-9]*`
+    </command>
+    <command name="PRIVMSG">
+        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+    </command>
+    <command name="NOTICE">
+        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+    </command>
+    <command name="MOTD">
+        `[A-Za-z0-9]+`
+    </command>
+    <command name="PING">
+        `[A-Za-z0-9]+`
+    </command>
+    <command name="PONG">
+        `[A-Za-z0-9]+`
+    </command>
+</commands>
