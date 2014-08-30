@@ -4,7 +4,7 @@ require_once("Bot.php");
 require_once("MyBot.php");
 
 $con_data = array("host" => "irc.hackthissite.org", "port" => "6667");
-$bot_data = array("user" => "KthProg", "pass" => "Kth@#5711131719232931", "nick" => "ProgBot", "realname" => "KTH", "channels" => array("#bots"));
+$bot_data = array("user" => "", "pass" => "", "nick" => "ProgBot", "realname" => "", "channels" => array("#bots"));
 
 $bot = new MyBot($con_data, $bot_data);
 
@@ -25,4 +25,10 @@ if($bot->connect()){
             $bot->respond($parsed_data);
         }
     }
+<<<<<<< HEAD
 }
+=======
+}else{
+    print_r($bot->get_errors());
+}
+>>>>>>> cecb7220d59f2405750be08aaaf820e46a716254
