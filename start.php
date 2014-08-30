@@ -26,7 +26,3 @@ if($bot->connect()){
         }
     }
 }
-=======
-}else{
-    print_r($bot->get_errors());
-}
