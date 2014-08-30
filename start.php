@@ -25,10 +25,8 @@ if($bot->connect()){
             $bot->respond($parsed_data);
         }
     }
-<<<<<<< HEAD
 }
 =======
 }else{
     print_r($bot->get_errors());
 }
->>>>>>> cecb7220d59f2405750be08aaaf820e46a716254
