@@ -3,7 +3,7 @@
 require_once("Bot.php");
 
 $con_data = array("host" => "irc.hackthissite.org", "port" => "6667");
-$bot_data = array("user" => "KthProg", "pass" => "Kth@#5711131719232931", "nick" => "ProgBot", "realname" => "KTH", "channels" => array("#bots"));
+$bot_data = array("user" => "", "pass" => "", "nick" => "ProgBot", "realname" => "", "channels" => array("#bots"));
 
 $bot = new PHPBot($con_data, $bot_data);
 
