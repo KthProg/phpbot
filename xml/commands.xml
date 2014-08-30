@@ -1,58 +1,109 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <commands>
     <command name="PASS">
-        `[A-Za-z0-9]+`
+        <args>
+            <arg name="password">`[\S]+`</arg>
+        </args>
     </command>
     <command name="NICK">
-        `[A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+        </args>
     </command>
     <command name="USER">
-        `[A-Za-z0-9]+ [0-9]+ [0-9\*]+ [A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[0-9]+`</arg>
+            <arg name="">`[\s]?[0-9\*]+`</arg>
+            <arg name="">`[\s]?[\S]+`</arg>
+        </args>
     </command>
     <command name="OPER">
-        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[\S]+`</arg>
+        </args>
     </command>
     <command name="MODE">
-        `[A-Za-z0-9]+ ([\+\-])([iwoOr])`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[\+\-]{1,1}[iwoOr]{1,1}`</arg>
+        </args>
     </command>
     <command name="QUIT">
-        `[A-Za-z0-9]*`
+        <args>
+            <arg name="">`[\S]*`</arg>
+        </args>
     </command>
     <!-- JOIN 0 will exit all open channels -->
     <command name="JOIN">
-        `[&amp;#\+!][A-Za-z0-9]+[ ]*[A-Za-z0-9]*`
+        <args>
+            <arg name="room">`[&amp;#\+!]{1,1}[\S]+`</arg>
+            <arg name="key">`[\s]?[\S]*`</arg>
+        </args>
     </command>
     <command name="PART">
-        `[A-Za-z0-9]+ [A-Za-z0-9]*`
+        <args>
+            <arg name="room">`[&amp;#\+!]{1,1}[\S]+`</arg>
+            <arg name="key">`[\s]?[\S]*`</arg>
+        </args>
     </command>
     <command name="TOPIC">
-        `[A-Za-z0-9]+ [A-Za-z0-9]*`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[\S]*`</arg>
+        </args>
     </command>
     <command name="NAMES">
-        `[A-Za-z0-9]* [A-Za-z0-9]*`
+        <args>
+            <arg name="?">`[\S]*`</arg>
+            <arg name="?">`[\s]?[\S]*`</arg>
+        </args>
     </command>
     <command name="LIST">
-        `[A-Za-z0-9]* [A-Za-z0-9]*`
+        <args>
+            <arg name="">`[\S]*`</arg>
+            <arg name="">`[\s]?[\S]*`</arg>
+        </args>
     </command>
     <command name="INVITE">
-        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+</arg>
+            <arg name="">`[\s]?[\S]+`</arg>
+        </args>
     </command>
     <command name="KICK">
-        `[A-Za-z0-9]+ [A-Za-z0-9]+ [A-Za-z0-9]*`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[\S]+[\s]?[\S]*`</arg>
+        </args>
     </command>
     <command name="PRIVMSG">
-        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[\s\S]+`</arg>
+        </args>
     </command>
     <command name="NOTICE">
-        `[A-Za-z0-9]+ [A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+            <arg name="">`[\s]?[\S]+`</arg>
+        </args>
+        
     </command>
     <command name="MOTD">
-        `[A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+        </args>
     </command>
     <command name="PING">
-        `[A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+        </args>
     </command>
     <command name="PONG">
-        `[A-Za-z0-9]+`
+        <args>
+            <arg name="">`[\S]+`</arg>
+        </args>
     </command>
 </commands>

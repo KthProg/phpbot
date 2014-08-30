@@ -4,10 +4,10 @@
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
             <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/Bot.php</file>
-            <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/MyFunctions.php</file>
             <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/xml/users.xml</file>
             <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/start.php</file>
             <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/xml/commands.xml</file>
+            <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/MyBot.php</file>
             <file>file:/C:/Users/KthProg/Documents/NetBeansProjects/phpbot/irc_constants.php</file>
         </group>
     </open-files>
