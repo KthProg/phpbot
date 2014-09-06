@@ -94,18 +94,23 @@ class PHPBot {
             $this->errors->set_errors("", libxml_get_errors());
             return 0.0;
         }
-        return 0.0;
+        return 0.0; // default, shouldn't ever reach this.
+    }
+    
+    private function xml_args_to_regex($xml_args){
+        $regex = "";
+        foreach($xml_args as $xml_arg){
+            $regex .= str_replace("`", "", $xml_arg->__toString());
+        }
+        $regex = "`".$regex."`";
+        return $regex;
     }
     
     public function send_command($command_name, array $args){
         if($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml")){
             if($xml_args = $xml->xpath("/commands/command[@name='".$command_name."']/args/arg")){
                 $arg_text = implode(" ",$args);
-                $regex = "";
-                foreach($xml_args as $xml_arg){
-                    $regex .= str_replace("`", "", $xml_arg->__toString());
-                }
-                $regex = "`".$regex."`";
+                $regex = $this->xml_args_to_regex($xml_args);
                 if(preg_match($regex, $arg_text)){
                     $full_cmd = $command_name." ".$arg_text."\r\n";
                     if(strlen($full_cmd) <= MAX_MSG_LENGTH){
@@ -148,7 +153,7 @@ class PHPBot {
         //untested
     }
     
-    public function get_server_data(){
+    public function get_response_data(){
         $responses = array();
         if($line = fgets($this->connection)){
             print("Server Said: ".$line);
@@ -177,46 +182,50 @@ class PHPBot {
         return $user_data;
     }
     
-    public function parse_server_data(array $responses){
+    private function parse_user_data($response){
+        $response[0] = ""; //remove ':' character (prefix) fastest (not best) way to do this
+        list($prefix, $cmd, $arg_str) = explode(" ", $response, 3);
+        if($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml")){
+            if($xml_args = $xml->xpath("/commands/command[@name='".$cmd."']/args/arg")){
+                $args = array();
+                foreach($xml_args as $xml_arg){
+                    $arg_regex = $xml_arg->__toString();
+                    $matches = array();
+                    if($matched = preg_match($arg_regex, $arg_str, $matches)){
+                        $args[] = $matches[0];
+                        $arg_str = str_replace($matches[0], "", $arg_str); //remove match from arguments string
+                    }else{
+                        if($matched === false){
+                            $this->errors->set_errors("Matching failed for command ".$cmd." regex ".$arg_regex);
+                        }else{
+                            $this->errors->set_errors("No matches found for command ".$cmd." regex ".$arg_regex);
+                        }
+                    }
+                }
+            }else{
+                $this->errors->set_errors("Could not find args for command ".$cmd, libxml_get_errors());
+                $args = explode(" ", $arg_str, MAX_PARAMETERS);
+            }
+        }else{
+            $this->errors->set_errors("", libxml_get_errors());
+        }
+        $user_data = PHPBot::get_prefix_data($prefix);
+        return array("from" => $user_data, "command" => $cmd, "args" => $args);
+    }
+    
+    private function parse_server_data($response){
+        list($cmd, $arg_str) = explode(" ", $response, 2);
+        $args = explode(" ", $arg_str, MAX_PARAMETERS);
+        return array("from" => array("server" => "?"), "command" => $cmd, "args" => $args);
+    }
+    
+    public function parse_response_data(array $responses){
         $parsed_responses = array();
         foreach($responses as $response){
-            if($response[0] == ":"){
-                $response[0] = ""; //remove ':' character (prefix) fastest (not best) way to do this
-                $parsed_response = explode(" ", $response, 3);
-                $prefix = $parsed_response[0];
-                $cmd = $parsed_response[1];
-                if($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml")){
-                    if($xml_args = $xml->xpath("/commands/command[@name='".$cmd."']/args/arg")){
-                        $args = array();
-                        foreach($xml_args as $xml_arg){
-                            $arg_regex = $xml_arg->__toString();
-                            $matches = array();
-                            if(preg_match($arg_regex, $parsed_response[2], $matches)){
-                                $args[] = $matches[0];
-                                $parsed_response[2] = preg_replace($arg_regex, "", $parsed_response[2], 1);
-                            }else{
-                                if($matched === false){
-                                    $this->errors->set_errors("Matching failed for command ".$cmd." regex ".$arg_regex);
-                                }else
-                                if($matched === 0){
-                                    $this->errors->set_errors("No matches found for command ".$cmd." regex ".$arg_regex);
-                                }
-                            }
-                        }
-                    }else{
-                        $this->errors->set_errors("Could not find args for command ".$cmd, libxml_get_errors());
-                        $args = explode(" ", $parsed_response[2], MAX_PARAMETERS);
-                    }
-                }else{
-                    $this->errors->set_errors("", libxml_get_errors());
-                }
-                $user_data = PHPBot::get_prefix_data($prefix);
-                $parsed_responses[] = array("from" => $user_data, "command" => $cmd, "args" => $args);
+            if($response[0] == ":"){ //user response, has prefix
+                $parsed_responses[] = $this->parse_user_data($response);
             }else{ // no prefix, just command and args (happens with PING)
-                $parsed_response = explode(" ", $response, 2);
-                $cmd = $parsed_response[0];
-                $args = explode(" ", $parsed_response[1], MAX_PARAMETERS);
-                $parsed_responses[] = array("from" => array("server" => "?"), "command" => $cmd, "args" => $args);
+                $parsed_responses[] = $this->parse_server_data($response);
             }
         }
         return $parsed_responses;
