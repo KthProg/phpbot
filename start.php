@@ -25,4 +25,8 @@ if($bot->connect()){
             $bot->respond($parsed_data);
         }
     }
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> origin/master
