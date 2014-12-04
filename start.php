@@ -25,8 +25,8 @@ if($bot->connect()){
             $bot->respond($parsed_data);
         }
     }else{
-		print_r($bot->get_errors());
-	}
+        print_r($bot->get_errors());
+    }
 }else{
     print_r($bot->get_errors());
 }
