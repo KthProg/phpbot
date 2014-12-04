@@ -24,9 +24,9 @@ if($bot->connect()){
             $parsed_data = $bot->parse_server_data($raw_data);
             $bot->respond($parsed_data);
         }
-    }
-<<<<<<< HEAD
+    }else{
+		print_r($bot->get_errors());
+	}
+}else{
+    print_r($bot->get_errors());
 }
-=======
-}
->>>>>>> origin/master
