@@ -98,37 +98,43 @@ class PHPBot {
     }
     
     public function send_command($command_name, array $args){
-        if($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml")){
-            if($xml_args = $xml->xpath("/commands/command[@name='".$command_name."']/args/arg")){
-                $arg_text = implode(" ",$args);
-                $regex = "";
-                foreach($xml_args as $xml_arg){
-                    $regex .= str_replace("`", "", $xml_arg->__toString());
-                }
-                $regex = "`".$regex."`";
-                if(preg_match($regex, $arg_text)){
-                    $full_cmd = $command_name." ".$arg_text."\r\n";
-                    if(strlen($full_cmd) <= MAX_MSG_LENGTH){
-                        print("Sending Command: ".$full_cmd);
-                        if(fwrite($this->connection, $full_cmd)){
-                            return true;
-                        }else{
-                            $this->errors->set_errors("Failed to send command ".$command_name);
-                        }
-                    }else{
-                        $this->errors->set_errors("Command exceeds max length (".(string)MAX_MSG_LENGTH.")");
-                    }
-                }else{
-                    $this->errors->set_errors("Args '".$arg_text."' do not match regex ".$regex." for command ".$command_name);
-                }
-            }else{
-                $this->errors->set_errors("Could not retrieve regex for command ".$command_name);
-            }
-        }else{
+        if(!($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml"))){
             $this->errors->set_errors("", libxml_get_errors());
+            return false;
         }
+        if(!($xml_args = $xml->xpath("/commands/command[@name='".$command_name."']/args/arg"))){
+            $this->errors->set_errors("Could not retrieve regex for command ".$command_name);
+            return false;
+        }
+        
+        $arg_text = implode(" ",$args);
+        $regex = "";
+        foreach($xml_args as $xml_arg){
+            $regex .= str_replace("`", "", $xml_arg->__toString());
+        }
+        $regex = "`".$regex."`";
+        
+        if(!preg_match($regex, $arg_text)){
+            $this->errors->set_errors("Args '".$arg_text."' do not match regex ".$regex." for command ".$command_name);
+            return false;
+        }
+        
+        $full_cmd = $command_name." ".$arg_text."\r\n";
+        
+        if(strlen($full_cmd) > MAX_MSG_LENGTH){
+            $this->errors->set_errors("Command exceeds max length (".(string)MAX_MSG_LENGTH.")");
+            return false;
+        }
+        
+        print("Sending Command: ".$full_cmd);
+        
+        if(!fwrite($this->connection, $full_cmd)){
+            $this->errors->set_errors("Failed to send command ".$command_name);
+            return false;
+        }
+        
         $this->errors->set_errors();
-        return false;
+        return true;
     }
     
     public function register_response_method($name, $cmd_trigger, $permissions){
@@ -226,16 +232,16 @@ class PHPBot {
         foreach($parsed_responses as $parsed_response){
             foreach($this->response_methods as $response_method){
                 if($response_method["command"] == $parsed_response["command"]){
-                    if($this->get_user_permissions($parsed_response["from"]["nick"]) >= $response_method["permissions"]){
-                        if($this->$response_method["name"]($parsed_response)){
-                            print("Ran response method ".$response_method["name"].PHP_EOL);
-                            print("Args: ".print_r($parsed_response["args"], true));
-                        }else{
-                            $this->errors->set_errors("Problem calling response function");
-                        }
-                    }else{
+                    if($this->get_user_permissions($parsed_response["from"]["nick"]) < $response_method["permissions"]){
                         $this->send_command("PRIVMSG", array($parsed_response["from"]["nick"], "You have insufficient priviledges to run this command"));
+                        continue;
                     }
+                    if(!$this->$response_method["name"]($parsed_response)){
+                        $this->errors->set_errors("Problem calling response function");
+                        continue;
+                    }
+                    print("Ran response method ".$response_method["name"].PHP_EOL);
+                    print("Args: ".print_r($parsed_response["args"], true));
                 }
             }
         }

@@ -45,6 +45,33 @@ class MyBot extends PHPBot{
         }
         return true;
     }
+    
+    protected function priv_msg_wisdom($parsed_response){
+        if($parsed_response["args"][0] == $this->my_data["nick"]){
+            $msg_parts = explode(" ", trim($parsed_response["args"][1]), 3);
+            print_r($msg_parts);
+            if($msg_parts[0] == ":WISDOM"){
+                $quote_data = file_get_contents("http://www.swanandmokashi.com/Homepage/Webservices/QuoteOfTheDay.asmx/GetQuote");
+                if(!$quote_data){
+                    $this->send_command("PRIVMSG", array($msg_parts[1], "Invalid response recieved for quote request."));
+                    return false;
+                }
+                $xml = simplexml_load_string($quote_data);
+                if(!$xml){
+                    $this->send_command("PRIVMSG", array($msg_parts[1], "Could not load xml."));
+                    return false;
+                }
+                
+                print_r($xml);
+                
+                $quote = $xml->QuoteOfTheDay->__toString();
+                $author = $xml->Author->__toString();
+                
+                $this->send_command("PRIVMSG", array($msg_parts[1], "Quote of the day: ".$author." - ".$quote));
+            }
+        }
+        return true;
+    }
 
     //command (string)ERR_BANNEDFROMCHAN
     protected function ask_for_unban($parsed_response){
