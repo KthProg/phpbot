@@ -7,6 +7,8 @@ define('COLOR',                   "\x03");
 define('BOLD',                    "\x02");
 define('ITALICIZE',               "\x1D");
 define('UNDERLINE',               "\x1F");
+define('REVERSE',                 "\x16");
+define('PLAIN',                   "\x0F");
 
 // colors
 define('WHITE',                   000);
