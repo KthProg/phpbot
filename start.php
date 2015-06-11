@@ -19,6 +19,7 @@ $bot->register_response_method(new ResponseMethod("leave", "PRIVMSG", 100));
 $bot->register_response_method(new ResponseMethod("recon", "PRIVMSG", 100));
 $bot->register_response_method(new ResponseMethod("say", "PRIVMSG", 0));
 $bot->register_response_method(new ResponseMethod("wisdom", "PRIVMSG", 0));
+$bot->register_response_method(new ResponseMethod("change_nick", "PRIVMSG", 100));
 // PRIVMSG #room BotNick CMD args
 $bot->register_response_method(new ResponseMethod("help_2", "PRIVMSG", 0));
 $bot->register_response_method(new ResponseMethod("irc_die_2", "PRIVMSG", 100));
@@ -26,6 +27,7 @@ $bot->register_response_method(new ResponseMethod("leave_2", "PRIVMSG", 100));
 $bot->register_response_method(new ResponseMethod("recon_2", "PRIVMSG", 100));
 $bot->register_response_method(new ResponseMethod("say_2", "PRIVMSG", 0));
 $bot->register_response_method(new ResponseMethod("wisdom_2", "PRIVMSG", 0));
+$bot->register_response_method(new ResponseMethod("change_nick_2", "PRIVMSG", 100));
 
 if($bot->connect()){
     if($bot->log_in()){

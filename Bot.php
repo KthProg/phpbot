@@ -153,6 +153,30 @@ class PHPBot {
         
         return (float)($role_nodes[0]->__toString());
     }
+    /**
+     * 
+     * @param type $command_name
+     * @return boolean
+     */
+    private function get_regex_for_command($command_name){
+        if(!($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml"))){
+            $this->errors->set_errors("", libxml_get_errors());
+            return false;
+        }
+        
+        if(!($xml_args = $xml->xpath("/commands/command[@name='".$command_name."']/args/arg"))){
+            $this->errors->set_errors("Could not retrieve regex for command ".$command_name, libxml_get_errors());
+            return false;
+        }
+        
+        $regex = "";
+        foreach($xml_args as $xml_arg){
+            $regex .= str_replace("`", "", $xml_arg->__toString());
+        }
+        $regex = "`".$regex."`";
+        
+        return $regex;
+    }
     
     /**
      * 
@@ -161,39 +185,32 @@ class PHPBot {
      * @return boolean Indicates if the command was sent successfully or not
      */
     protected function send_command($command_name, array $args){
-        if(!($xml = simplexml_load_file(dirname(__FILE__)."\\xml\\commands.xml"))){
-            $this->errors->set_errors("", libxml_get_errors());
-            return false;
-        }
-        if(!($xml_args = $xml->xpath("/commands/command[@name='".$command_name."']/args/arg"))){
-            $this->errors->set_errors("Could not retrieve regex for command ".$command_name);
+        if(!($regex = $this->get_regex_for_command($command_name))){
             return false;
         }
         
+        // TODO: check each arg against each arg regex
         $arg_text = implode(" ",$args);
-        $regex = "";
-        foreach($xml_args as $xml_arg){
-            $regex .= str_replace("`", "", $xml_arg->__toString());
-        }
-        $regex = "`".$regex."`";
-        
         if(!preg_match($regex, $arg_text)){
             $this->errors->set_errors("Args '".$arg_text."' do not match regex ".$regex." for command ".$command_name);
             return false;
         }
         
         $full_cmd = $command_name." ".$arg_text."\r\n";
-        
         if(strlen($full_cmd) > MAX_MSG_LENGTH){
             $this->errors->set_errors("Command exceeds max length (".(string)MAX_MSG_LENGTH.")");
             return false;
         }
         
         print("Sending Command: ".$full_cmd);
-        
         if(!fwrite($this->connection, $full_cmd)){
             $this->errors->set_errors("Failed to send command ".$command_name);
             return false;
+        }
+        
+        // make sure nick reflects nick sent to server
+        if($command_name == "NICK"){
+            $this->my_data->nick = $args[0];
         }
         
         $this->errors->set_errors();

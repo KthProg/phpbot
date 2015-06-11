@@ -2,6 +2,34 @@
 define('MAX_MSG_LENGTH',          512);
 define('MAX_PARAMETERS',          015);
 
+// control characters
+define('COLOR',                   "\x03");
+define('BOLD',                    "\x02");
+define('ITALICIZE',               "\x1D");
+define('UNDERLINE',               "\x1F");
+
+// colors
+define('WHITE',                   000);
+define('BLACK',                   001);
+define('NAVY_BLUE',               002);
+define('GREEN',                   003);
+define('RED',                     004);
+define('MAROON',                  005);
+define('PURPLE',                  006);
+define('ORANGE',                  007);
+define('YELLOW',                  008);
+define('LIGHT_GREEN',             009);
+define('TEAL',                    010);
+define('CYAN',                    011);
+define('ROYAL_BLUE',              012);
+define('PINK',                    013);
+define('GREY',                    014);
+define('LIGHT_GREY',              015);
+// alternate spellings
+define('GRAY',                    014);
+define('LIGHT_GRAY',              015);
+
+// server response 'commands'
 define('RPL_WELCOME',             001);
 define('RPL_YOURHOST',            002);
 define('RPL_CREATED',             003);

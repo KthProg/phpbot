@@ -2,32 +2,18 @@
 
 class MyBot extends PHPBot{
     /**
-     *
-     * @var string Help message for users on IRC 
+     * Returns the help document as a string
+     * @return string Help message for users on IRC 
      */
     private function get_help_doc(){
+        // $nick will replace references in help.php
         $nick = $this->my_data->nick;
-        return <<<HELP
-$nick Help
-==============================
-This bot is pretty cool. Here are its commands: 
-HELP: Responds to PRIVMSG $nick HELP. Causes the bot to send the user this message.
--HELP: Responds to PRIVMSG [room] $nick HELP. Causes the bot to output this message to the room.
-DIE: Responds to PRIVMSG $nick DIE. Causes the bot to log out and disconnect.
--DIE: Responds to PRIVMSG [room] $nick DIE. Causes the bot to log out and disconnect.
-LEAVE: Responds to PRIVMSG $nick LEAVE. Causes the bot to log out and stay connected.
--LEAVE: Responds to PRIVMSG [room] $nick LEAVE. Causes the bot to log out and stay connected.
-RECONNECT: Responds to PRIVMSG $nick RECONNECT. Causes the bot to log out and log back in.
--RECONNECT: Responds to PRIVMSG [room] $nick RECONNECT. Causes the bot to log out and log back in.
-SAY [room] [message]: Responds to PRIVMSG $nick SAY. Causes the bot to repeat user input, with a destination specified.
--SAY [message]: Responds to PRIVMSG [room] $nick SAY. Causes the bot to repeat user input to the room.
-WISDOM [room]: Responds to PRIVMSG $nick WISDOM. Causes the bot to output a daily quote to the specified room.
--WISDOM: Responds to PRIVMSG [room] $nick WISDOM. Causes the bot to output a daily quote to the room.
-PONG: Responds to PING $nick. Causes to bot to PONG the originator of the PING message.
-==============================
-If there's anything else you'd like to see this bot do, email me at kthprog@gmail.com.
-GitHub repo is at https://github.com/KthProg/phpbot
-HELP;
+        // start sending output to buffer
+        ob_start();
+        include('help.php');
+        // get text from buffer and close
+        $help_doc = ob_get_clean();
+        return $help_doc;
     }
     
     private function get_priv_msg_parts($parsed_response){
@@ -196,6 +182,7 @@ HELP;
         $this->_say($room_or_user, $msg_parts[2]);
         return true;
     }
+    
     private function _wisdom(){
         $quote_data = file_get_contents("http://www.swanandmokashi.com/Homepage/Webservices/QuoteOfTheDay.asmx/GetQuote");
         if(!$quote_data){
@@ -217,7 +204,15 @@ HELP;
             return $e->getMessage();
         }
         
-        return "Quote of the day: ".$author." - ".$quote;
+        $message = BOLD.COLOR.GREY."Quote of the day: ".COLOR.BOLD.UNDERLINE.$author.UNDERLINE." - \"".ITALICIZE.$quote.ITALICIZE."\"";
+        //sometimes, html formatting is specified. replace this with IRC control chars
+        $message = str_replace(array("<strong>", "</strong>", "<b>", "</b>"), BOLD, $message);
+        $message = str_replace(array("<em>", "</em>", "<i>", "</i>"), ITALICIZE, $message);
+        $message = str_replace(array("<u>", "</u>"), UNDERLINE, $message);
+        // strip remaining HTML tags
+        $message = strip_tags($message);
+        
+        return $message;
     }
     /**
      * 
@@ -280,6 +275,34 @@ HELP;
         $this->send_command("NICK", array($rnd_nick));
         return true;
     }
+    
+    /**
+     * 
+     * @param ParsedResponse $parsed_response
+     * @return boolean
+     */
+    protected function change_nick($parsed_response){
+        if(!$this->check_is_cmd($parsed_response, "NICK")){
+            return false;
+        }
+        $msg_parts = $this->get_priv_msg_parts($parsed_response);
+        $this->send_command("NICK", array($msg_parts[1]));
+        return true;
+    }
+    /**
+     * 
+     * @param ParsedResponse $parsed_response
+     * @return boolean
+     */
+    protected function change_nick_2($parsed_response){
+        $msg_parts = $this->get_priv_msg_parts($parsed_response);
+        if(!$this->check_is_cmd_2($msg_parts, "NICK")){
+            return false;
+        }
+        $this->send_command("NICK", array($msg_parts[2]));
+        return true;
+    }
+    
 
     /**
      * 
