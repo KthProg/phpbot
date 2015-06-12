@@ -261,6 +261,10 @@ class MyBot extends PHPBot{
      */
     protected function join_chans($parsed_response){
         $this->join_channels();
+        // set +B (bot) mode (For nick)
+        if(!$this->send_command("MODE", array($this->my_data->nick, "+B"))){
+            return false;
+        }
         return true;
     }
 

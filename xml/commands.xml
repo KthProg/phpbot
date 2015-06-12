@@ -27,7 +27,8 @@
     <command name="MODE">
         <args>
             <arg name="">`[\S]+`</arg>
-            <arg name="">`[\s]?[\+\-]{1,1}[iwoOr]{1,1}`</arg>
+            <!-- 'B' added for irc.hackthissite.org -->
+            <arg name="">`[\s]?[\+\-]{1,1}[iwoOrB]{1,1}`</arg>
         </args>
     </command>
     <command name="QUIT">

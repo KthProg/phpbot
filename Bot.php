@@ -108,6 +108,7 @@ class PHPBot {
         // to send subsequent commands if the prior command fails
         // '&&' would short-circuit and not call the functions
         // one of the few times side-effects is a desired behavior
+        
         $this->errors->set_errors($sent ? "" : "Failed to log in");
         return $sent;
     }
@@ -185,11 +186,15 @@ class PHPBot {
      * @return boolean Indicates if the command was sent successfully or not
      */
     protected function send_command($command_name, array $args){
+        print("Processing Command: ".$command_name.PHP_EOL);
+        
         if(!($regex = $this->get_regex_for_command($command_name))){
+            $this->errors->set_errors("Regex does not exist for command ".$command_name);
             return false;
         }
         
         // TODO: check each arg against each arg regex
+        // instead of whole string
         $arg_text = implode(" ",$args);
         if(!preg_match($regex, $arg_text)){
             $this->errors->set_errors("Args '".$arg_text."' do not match regex ".$regex." for command ".$command_name);
@@ -198,7 +203,7 @@ class PHPBot {
         
         $full_cmd = $command_name." ".$arg_text."\r\n";
         if(strlen($full_cmd) > MAX_MSG_LENGTH){
-            $this->errors->set_errors("Command exceeds max length (".(string)MAX_MSG_LENGTH.")");
+            $this->errors->set_errors("Command ".$command_name." exceeds max length (".(string)MAX_MSG_LENGTH.")");
             return false;
         }
         

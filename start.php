@@ -10,7 +10,7 @@ $bot = new MyBot($con_data, $bot_data);
 
 $bot->register_response_method(new ResponseMethod("pong", "PING", 0));
 $bot->register_response_method(new ResponseMethod("random_nick", (string)ERR_NICKNAMEINUSE, 0));
-$bot->register_response_method(new ResponseMethod("join_channels", (string)RPL_ENDOFMOTD, 0));
+$bot->register_response_method(new ResponseMethod("join_chans", (string)RPL_ENDOFMOTD, 0));
 $bot->register_response_method(new ResponseMethod("ask_for_unban", (string)ERR_BANNEDFROMCHAN, 0));
 // PRIVMSG BotNick CMD args
 $bot->register_response_method(new ResponseMethod("help", "PRIVMSG", 0));
