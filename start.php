@@ -29,16 +29,13 @@ $bot->register_response_method(new ResponseMethod("say_2", "PRIVMSG", 0));
 $bot->register_response_method(new ResponseMethod("wisdom_2", "PRIVMSG", 0));
 $bot->register_response_method(new ResponseMethod("change_nick_2", "PRIVMSG", 100));
 
-if($bot->connect()){
-    if($bot->log_in()){
-        while($bot->is_connected){
-            $raw_data = $bot->get_server_data();
-            $parsed_data = $bot->parse_server_data($raw_data);
-            $bot->respond($parsed_data);
-        }
-    }else{
-        print_r($bot->get_errors());
-    }
-}else{
+if(!$bot->connect() || !$bot->log_in()){ 
     print_r($bot->get_errors());
+    exit("Failed to connect or failed to log in.");
+}
+
+while($bot->is_connected){
+    $raw_data = $bot->get_server_data();
+    $parsed_data = $bot->parse_server_data($raw_data);
+    $bot->respond($parsed_data);
 }
